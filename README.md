@@ -46,4 +46,13 @@ done
 | It2 PCA(50) + random forest | 0.987 | 0.972 | 0.926 | 1.4 s |
 | It3 CNN | 0.992 | 0.774 | 0.993 | 196 s |
 
-The CNN's low sensitivity at 0.5 is a threshold issue, not a ranking issue. Task 15 tunes the threshold. The test set has not been used yet.
+The CNN's low sensitivity at 0.5 is a threshold issue, not a ranking issue.
+
+## Test results (`04_eval`, thresholds chosen on validation for ≥95% sensitivity)
+| Model | Threshold | AUC (95% CI) | Sensitivity (95% CI) | Specificity (95% CI) | Missed pneumonia | False alarms |
+| --- | --- | --- | --- | --- | --- | --- |
+| It1 logistic regression | 0.50 | 0.930 (0.904–0.954) | 0.972 (0.955–0.987) | 0.709 (0.647–0.767) | 11 | 68 |
+| It2 PCA + random forest | 0.55 | 0.941 (0.922–0.960) | 0.936 (0.910–0.959) | 0.774 (0.718–0.827) | 25 | 53 |
+| **It3 CNN** | 0.06 | **0.961 (0.946–0.974)** | 0.969 (0.951–0.985) | 0.722 (0.662–0.780) | 12 | 65 |
+
+The test set was scored once. The CNN is the final model: it holds up best under the train/test shift. Its main weakness is specificity, at about 72%.
