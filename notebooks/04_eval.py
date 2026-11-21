@@ -118,11 +118,13 @@ for n in NAMES:
     fpr, tpr, _ = roc_curve(yte, test_scores[n])
     auc = test_table.set_index("model").loc[n, "auc"]
     axes[0].plot(fpr, tpr, label=f"{n} (AUC {auc:.3f})")
+    if n == "It0 majority":
+        continue  # constant scores: its PR "curve" is just the prevalence line drawn below
     p, r, _ = precision_recall_curve(yte, test_scores[n])
     axes[1].plot(r, p, label=f"{n} (AP {average_precision_score(yte, test_scores[n]):.3f})")
 axes[0].plot([0, 1], [0, 1], ls="--", color="grey", lw=0.8)
 axes[0].set(xlabel="False positive rate (1 − specificity)", ylabel="Sensitivity", title="Test ROC curves")
-axes[1].axhline(yte.mean(), ls="--", color="grey", lw=0.8)
+axes[1].axhline(yte.mean(), ls="--", color="grey", lw=0.8, label=f"majority baseline (prevalence {yte.mean():.3f})")
 axes[1].set(xlabel="Recall (sensitivity)", ylabel="Precision", title="Test precision–recall curves")
 for a in axes:
     a.legend(frameon=False, fontsize=8, loc="lower left" if a is axes[1] else "lower right")

@@ -11,6 +11,8 @@ A minimal, reproducible pipeline that classifies 28×28 pediatric chest X-rays a
 | `notebooks/01_eda` | Tasks 2–7: splits, class balance, figures 1–6, duplicates, brightness shift |
 | `notebooks/02_preprocess` | Task 8: scaling, flattening, standardisation, class weights |
 | `notebooks/03_models` | Tasks 9–12: majority baseline, logistic regression, PCA + random forest, CNN |
+| `notebooks/04_eval` | Tasks 14–17: thresholds on validation, single test run with bootstrap CIs, error analysis |
+| `run_all.sh` | Rebuilds every result from scratch and times each notebook |
 | `figures/` | Report figures |
 | `results/` | Validation metrics table and saved CNN |
 
@@ -20,11 +22,7 @@ Notebooks are kept as paired `.py` (jupytext percent format, easy to diff) and `
 ```bash
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
-cd notebooks
-for nb in 01_eda 02_preprocess 03_models; do
-  ../.venv/bin/jupytext --to ipynb "$nb.py"
-  ../.venv/bin/jupyter nbconvert --to notebook --execute --inplace "$nb.ipynb"
-done
+./run_all.sh   # downloads the data and re-runs notebooks 01–04, printing the time for each
 ```
 
 ## Dataset facts (verified in `01_eda`)
