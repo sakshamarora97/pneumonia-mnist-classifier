@@ -12,6 +12,7 @@ A minimal, reproducible pipeline that classifies 28×28 pediatric chest X-rays a
 | `notebooks/02_preprocess` | Task 8: scaling, flattening, standardisation, class weights |
 | `notebooks/03_models` | Tasks 9–12: majority baseline, logistic regression, PCA + random forest, CNN |
 | `notebooks/04_eval` | Tasks 14–17: thresholds on validation, single test run with bootstrap CIs, error analysis |
+| `notebooks/05_tuning` | Hyperparameter grids for all three model families, on validation only (about 12 min; not part of `run_all.sh`) |
 | `run_all.sh` | Rebuilds every result from scratch and times each notebook |
 | `figures/` | Report figures |
 | `results/` | Validation metrics table and saved CNN |
