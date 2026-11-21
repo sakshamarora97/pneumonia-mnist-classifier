@@ -1,0 +1,49 @@
+# Pneumonia vs. normal chest X-ray classification (PneumoniaMNIST)
+
+A minimal, reproducible pipeline that classifies 28×28 pediatric chest X-rays as normal or pneumonia. It is meant as a triage aid that supports clinicians, not a diagnostic tool.
+
+## Layout
+| Path | Purpose |
+| --- | --- |
+| `config.py` | Seed, paths, image size, `set_seeds()` |
+| `src/data.py` | `load_splits()`: TFDS download, cached to `data/pneumonia_28.npz` |
+| `src/metrics.py` | `evaluate()` and `log_result()` → `results/val_metrics.csv` |
+| `notebooks/01_eda` | Tasks 2–7: splits, class balance, figures 1–6, duplicates, brightness shift |
+| `notebooks/02_preprocess` | Task 8: scaling, flattening, standardisation, class weights |
+| `notebooks/03_models` | Tasks 9–12: majority baseline, logistic regression, PCA + random forest, CNN |
+| `figures/` | Report figures |
+| `results/` | Validation metrics table and saved CNN |
+
+Notebooks are kept as paired `.py` (jupytext percent format, easy to diff) and `.ipynb` files.
+
+## Setup and run
+```bash
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -r requirements.txt
+cd notebooks
+for nb in 01_eda 02_preprocess 03_models; do
+  ../.venv/bin/jupytext --to ipynb "$nb.py"
+  ../.venv/bin/jupyter nbconvert --to notebook --execute --inplace "$nb.ipynb"
+done
+```
+
+## Dataset facts (verified in `01_eda`)
+| Split | Images | Normal (0) | Pneumonia (1) | % pneumonia |
+| --- | --- | --- | --- | --- |
+| train | 4,708 | 1,214 | 3,494 | 74.2 |
+| val | 524 | 135 | 389 | 74.2 |
+| test | 624 | 234 | 390 | 62.5 |
+
+- Images are 28×28×1 uint8. TFDS label names are `['Normal', 'Pneumonia']`, so 1 = pneumonia.
+- Exact duplicates: 18 within train, 3 within test, and 8 images shared between train and validation (a small leak). None are shared with test.
+- Test differs from train in class balance and brightness, so expect lower test scores than validation scores.
+
+## Validation results (threshold 0.5)
+| Model | AUC | Sensitivity | Specificity | Train time |
+| --- | --- | --- | --- | --- |
+| It0 majority | 0.500 | 1.000 | 0.000 | 0 s |
+| It1 logistic regression (C=0.01) | 0.992 | 0.951 | 0.963 | 0.2 s |
+| It2 PCA(50) + random forest | 0.987 | 0.972 | 0.926 | 1.4 s |
+| It3 CNN | 0.992 | 0.774 | 0.993 | 196 s |
+
+The CNN's low sensitivity at 0.5 is a threshold issue, not a ranking issue. Task 15 tunes the threshold. The test set has not been used yet.
